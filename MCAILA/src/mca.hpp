@@ -3,7 +3,10 @@
  /*                                                            */
  /*  Monte Carlo Arithmetic Implementation for Linear Algebra  */
  /*                                                            */
- /*  Copyright (C) 2015 Valentin I. Labourdette :              */
+ /*  Copyright (C) 2015  
+ /*  Christophe Denis :                                        */
+ /*  christophe dot denis at cmla dot ens dash cachan dot fr   */
+ /*  and Valentin Labourdette :                                */
  /*  valentin dot labourdette at gmail dot com                 */
  /*                                                            */
  /*  This file is part of the Monte Carlo Arithmetic           */
@@ -25,6 +28,7 @@
  /*  <http://www.gnu.org/licenses/>.                           */
  /*                                                            */
  /**************************************************************/
+
 
 
 
