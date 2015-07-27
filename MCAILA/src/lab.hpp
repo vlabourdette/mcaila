@@ -74,7 +74,26 @@ namespace mcaila{
   }
 
   template</*typename matrix_t, */typename T>
-  matrix_t<T> matrix_product (matrix_t<T>& A, matrix_t<T>& B);
+  matrix_t<T> matrix_product (matrix_t<T>& A, matrix_t<T>& B)
+  { 
+    size_t m = A.size();
+    size_t p = B.size();
+    matrix_t<T> AB = make_matrix<T> (m,p);
+    size_t n = (A[0]).size(); 
+    for (size_t i = 0 ; i < m ; i++)
+      {
+	for (size_t j = 0 ; j < p ; j++)
+	  {
+	    T temp = 0;
+	    for (size_t k = 0 ; k < n ; k++)
+	      {
+		temp += A[i][k]*B[k][j];
+	      }
+	    AB[i][j] = temp;
+	  }
+      }
+    return AB;
+  }
   
   template</*typename matrix_t, */typename T>
   std::vector<size_t> LU_factor (matrix_t<T>& A)
