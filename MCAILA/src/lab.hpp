@@ -56,7 +56,7 @@ namespace mcaila{
     for (size_t i = 0 ; i < A.size() ; i++)
       {
 	sum = 0;
-	for (size_t j = 0 ; j < A.size() ; j++)
+	for (size_t j = 0 ; j < (A[0]).size() ; j++)
 	  {
 	    sum += A[i][j];
 	  }
@@ -77,7 +77,7 @@ namespace mcaila{
   matrix_t<T> matrix_product (matrix_t<T>& A, matrix_t<T>& B)
   { 
     size_t m = A.size();
-    size_t p = B.size();
+    size_t p = (B[0]).size();
     matrix_t<T> AB = make_matrix<T> (m,p);
     size_t n = (A[0]).size(); 
     for (size_t i = 0 ; i < m ; i++)
@@ -98,7 +98,7 @@ namespace mcaila{
   template</*typename matrix_t, */typename T>
   std::vector<size_t> LU_factor (matrix_t<T>& A)
   {
-    std::vector<size_t> pivot(A.size()) ;
+    std::vector<size_t> pivot (A.size());
     for (size_t i = 0 ; i < A.size()-1 ; i++)
       {
 	//partial pivoting
@@ -128,6 +128,7 @@ namespace mcaila{
 		A[j][k] -= (A[j][i]*A[i][k]);
 	      }
 	  }
+	pivot[A.size() - 1] = A.size() - 1;
 	
       }
  
@@ -157,17 +158,19 @@ namespace mcaila{
   {
     int iter = 0, ITER_MAX = 30;
     size_t n = A.size();
-    matrix_t<F> lu, y, z;
-    matrix_t<D> x, r;
-    std::vector<int> pivot (n);
+    matrix_t<F> lu = make_matrix<F>(A.size(),A.size());
+    matrix_t<F> y = make_matrix<F>(b.size(),b[0].size());
+    matrix_t<F> z = make_matrix<F>(b.size(),b[0].size());
+    matrix_t<D> x = make_matrix<D>(b.size(),b[0].size());
+    matrix_t<D> r = make_matrix<D>(b.size(),b[0].size());
+
     for (size_t i = 0 ; i < n ; i++)
       {
 	for (size_t j = 0 ; j < n ; j++)
 	  lu[i][j] = static_cast<F>(A[i][j]);
 	y[i][0] = static_cast<F>(b[i][0]);
       }
-    pivot = LU_factor<F>(lu);
-
+    std::vector<size_t> pivot = LU_factor<F>(lu);
     LU_solve<F> (lu, y, pivot);
     
     for (size_t i = 0 ; i < n ; i++)
@@ -182,9 +185,9 @@ namespace mcaila{
 
 	for (size_t i = 0 ; i < n ; i++)
 	  { x[i][0] -= static_cast<D>(z[i][0]); }
-	r = matrix_product<D>> (A, x);
+	r = matrix_product<D> (A, x);
       }
-    
+    return x;
   }
   
   

@@ -32,13 +32,16 @@
 
 
 
+CC=g++ -std=c++11 -fopenmp
 
-CC=g++ -O3 -g -std=c++11 -fopenmp -lm
+RELEASE=-Ofast
+
+DEBUG=-Og -ggdb3
 
 all: test
 
 test: test.cpp
-	$(CC) -o test test.cpp && mv test ../bin/
+	$(CC) $(DEBUG) -o test test.cpp && mv test ../bin/
 
 
 clear:

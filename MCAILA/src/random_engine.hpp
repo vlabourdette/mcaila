@@ -46,7 +46,16 @@
 
 namespace mcaila{
 
-  std::mt19937_64& random_engine(size_t thread_id)
+  size_t thread_id ()
+  {
+#if defined(_OPENMP)
+    return size_t(omp_get_thread_num());
+#else
+    return 0;
+#endif
+  }
+  
+  std::mt19937_64& random_engine(size_t thread_id = thread_id())
   {
     static std::vector<std::mt19937_64> r =
       []()->std::vector<std::mt19937_64>

@@ -267,7 +267,6 @@ namespace mcaila{
       return *this;
     }
     
-    static std::mt19937_64 DRE;
     static std::uniform_real_distribution<IEEE_type> DR;
     
   private:
@@ -279,7 +278,7 @@ namespace mcaila{
       static int bias = 0;
       if (digits<PRECISION)
 	{
-	  IEEE_type xeta = DR(DRE);
+	  IEEE_type xeta = DR(random_engine());
 	  inexact(PRECISION, xeta);
 	}
       bias++;
@@ -299,9 +298,6 @@ namespace mcaila{
     
   };
   
-  template<typename IEEE_type, int PRECISION>
-  std::mt19937_64 wrapper<IEEE_type, PRECISION>::DRE
-  = mcaila::random_engine(0);
   template<typename IEEE_type, int PRECISION>
   std::uniform_real_distribution<IEEE_type> wrapper<IEEE_type, PRECISION>::DR
   = std::uniform_real_distribution<IEEE_type> (-.5, .5);
