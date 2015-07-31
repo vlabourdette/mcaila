@@ -152,17 +152,34 @@ namespace mcaila{
       }
     
   }
+
+  template<typename T> matrix_t<T> LU (matrix_t<T>& A, matrix_t<T>& b)
+  {
+    size_t n = A.size();
+
+    matrix_t<T> lu = make_matrix<T>(A.size(), A[0].size());
+    matrix_t<T> x = make_matrix<T>(b.size(), b[0].size());	
+    for (size_t i = 0 ; i < n ; i++)
+      {
+	for (size_t j = 0 ; j < n ; j++)
+	  lu[i][j] = A[i][j];
+	x[i][0] = b[i][0];
+      }
+    std::vector<size_t> pivot = LU_factor<T>(lu);
+    LU_solve<T> (lu, x, pivot);
+    return x;
+  }
   
   template</*typename matrix_t, */typename F, typename D>
   matrix_t<D> LU_mixte (matrix_t<D>& A, matrix_t<D>& b, D epsilon)
   {
     int iter = 0, ITER_MAX = 30;
     size_t n = A.size();
-    matrix_t<F> lu = make_matrix<F>(A.size(),A.size());
-    matrix_t<F> y = make_matrix<F>(b.size(),b[0].size());
-    matrix_t<F> z = make_matrix<F>(b.size(),b[0].size());
-    matrix_t<D> x = make_matrix<D>(b.size(),b[0].size());
-    matrix_t<D> r = make_matrix<D>(b.size(),b[0].size());
+    matrix_t<F> lu = make_matrix<F>(A.size(), A[0].size());
+    matrix_t<F> y = make_matrix<F>(b.size(), b[0].size());
+    matrix_t<F> z = make_matrix<F>(b.size(), b[0].size());
+    matrix_t<D> x = make_matrix<D>(b.size(), b[0].size());
+    matrix_t<D> r = make_matrix<D>(b.size(), b[0].size());
 
     for (size_t i = 0 ; i < n ; i++)
       {

@@ -45,8 +45,9 @@
 
 int main ()
 {
-  const int PRECISION = 23;
-
+  const int PRECISION_F = 24;
+  const int PRECISION_D = 53;
+  
   /*
     Génération de A : 
     On appelle explicitement le constructeur pour préciser le nombre de 
@@ -54,26 +55,23 @@ int main ()
     On pourrait aussi tout simplement écrire A[0][0] = .2161 puisque les
     opérateurs de conversion ont été surchargés.
    */
-  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION>>(2,2);
-  A[0][0] = mcaila::wrapper<double, PRECISION>
+  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,2);
+  A[0][0] = mcaila::wrapper<double, PRECISION_D>
     (.2161, 4);
-  A[0][1] = mcaila::wrapper<double, PRECISION>
+  A[0][1] = mcaila::wrapper<double, PRECISION_D>
     (.1441, 4);
-  A[1][0] = mcaila::wrapper<double, PRECISION>
+  A[1][0] = mcaila::wrapper<double, PRECISION_D>
     (1.2969, 5);
-  A[1][1] = mcaila::wrapper<double, PRECISION>
+  A[1][1] = mcaila::wrapper<double, PRECISION_D>
     (.8648, 4);
 
-  /*
-    Pour des raisons de généricité, même les vecteurs sont des matrices
-   */
-  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION>>(2,1);
-  b[0][0] = mcaila::wrapper<double, PRECISION>
+  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,1);
+  b[0][0] = mcaila::wrapper<double, PRECISION_D>
     (.1440, 4);
-  b[1][0] = mcaila::wrapper<double, PRECISION>
+  b[1][0] = mcaila::wrapper<double, PRECISION_D>
     (.8642, 4);
 
-  mcaila::wrapper<double, PRECISION> epsilon = pow(10,-10);
+  mcaila::wrapper<double, PRECISION_D> epsilon = pow(10,-10);
   
   std::cout << "Etat initial de A : " << std::endl;
   std::cout << static_cast<double>(A[0][0]) << " "
@@ -82,12 +80,7 @@ int main ()
 	    << static_cast<double>(A[1][1]) << std::endl;
   std::cout << "\n";
 
-  /*
-    LU
 
-    Grâce aux templates, les fonctions LU_factor et LU_solve marchent de la
-    même façon pour les types flottants de base et pour leurs wrappers
-   */
   /*
   std::vector<size_t> pivot =
     mcaila::LU_factor<mcaila::wrapper<double, PRECISION>>(A);
@@ -95,8 +88,8 @@ int main ()
   mcaila::LU_solve<mcaila::wrapper<double, PRECISION>> (A, x, pivot);
   */
   
-  auto x = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION>,
-			    mcaila::wrapper<double, PRECISION>>
+  auto x = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION_F>,
+			    mcaila::wrapper<double, PRECISION_D>>
     (A, b, epsilon);
     
   std::cout << static_cast<double>(x[0][0]) << " "
