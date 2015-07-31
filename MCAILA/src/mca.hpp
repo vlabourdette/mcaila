@@ -285,7 +285,7 @@ namespace mcaila{
     }
     void inexact (int s, IEEE_type xeta)
     {
-        value += pow(2,oom()-s) * xeta;
+      value += pow(2,oom()-s) * xeta;
     }
     int oom ()
     {

@@ -37,7 +37,6 @@
 
 #include <iostream>
 #include <vector>
-#include "mca.hpp"
 
 template<typename T>
 using matrix_t = std::vector<std::vector<T>>;

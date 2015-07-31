@@ -31,82 +31,21 @@
 
 
 
+#ifndef __STATS_H__
+#define __STATS_H__
 
+#include <utils>
+#include <functional>
 
-#include "mca.hpp"
-#include "lab.hpp"
-#include <iostream>
+template<typename T>
+using matrix_t = std::vector<std::vector<T>>;
 
-#if defined(_OPENMP)
-#include <omp.h>
+namespace mcaila{
+
+  template<typename T> std::pair<T, T> stat_analysis
+  (std::function(/*voir doc STL*/), matrix_t<T>, matrix_t<T>, int);
+  
+}
+
 #endif
 
-
-
-int main ()
-{
-  const int PRECISION_F = 23;
-  const int PRECISION_D = 52;
-  
-  
-  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,2);
-  A[0][0] = mcaila::wrapper<double, PRECISION_D>
-    (.2161, 4);
-  A[0][1] = mcaila::wrapper<double, PRECISION_D>
-    (.1441, 4);
-  A[1][0] = mcaila::wrapper<double, PRECISION_D>
-    (1.2969, 5);
-  A[1][1] = mcaila::wrapper<double, PRECISION_D>
-    (.8648, 4);
-
-  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,1);
-  b[0][0] = mcaila::wrapper<double, PRECISION_D>
-    (.1440, 4);
-  b[1][0] = mcaila::wrapper<double, PRECISION_D>
-    (.8642, 4);
-  
-  /*
-  auto A = mcaila::make_matrix<double>(24,24);
-  for (int i = 0 ; i < 24 ; i++)
-    {
-      for (int j = 0 ; j < 24 ; j++)
-	{
-	  if (i == j) A[i][j] = 1;
-	  else if (i > j) A[i][j] = -1;
-	  else A[i][j] = 0;
-	}
-    }
-  auto b = mcaila::make_matrix<double>(24,1);
-  for (int i = 0 ; i < 24 ; i++)
-    {
-      b[i][0] = 1;
-    }
-  */
-  double epsilon = pow(10,-10);
-  /*
-  std::cout << "Etat initial de A : " << std::endl;
-  std::cout << static_cast<double>(A[0][0]) << " "
-	    << static_cast<double>(A[0][1]) << std::endl;
-  std::cout << static_cast<double>(A[1][0]) << " "
-	    << static_cast<double>(A[1][1]) << std::endl;
-  std::cout << "\n";
-  */
-
-  /*
-  std::vector<size_t> pivot =
-    mcaila::LU_factor<mcaila::wrapper<double, PRECISION>>(A);
-  
-  mcaila::LU_solve<mcaila::wrapper<double, PRECISION>> (A, x, pivot);
-  */
-  
-  auto x = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION_F>,
-			    mcaila::wrapper<double, PRECISION_D>>
-    (A, b, epsilon);
-
-  for (int i = 0 ; i < 2 ; i++)
-    {
-      std::cout << static_cast<double>(x[i][0]) << std::endl;
-    }
-  
-  return 0;
-}
