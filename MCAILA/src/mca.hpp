@@ -210,7 +210,15 @@ namespace mcaila{
     {
       return (x.value <= y.value);
     }
-      
+
+    friend std::ostream& operator<< (std::ostream& os,
+				     const wrapper<IEEE_type, PRECISION>& x)
+    {
+      os << x.value;
+      return os;
+    }
+  
+    
     wrapper<IEEE_type, PRECISION>& operator +=
     (const wrapper<IEEE_type, PRECISION>& x)
     {
@@ -297,12 +305,34 @@ namespace mcaila{
     }
     
   };
-  
+
   template<typename IEEE_type, int PRECISION>
   std::uniform_real_distribution<IEEE_type> wrapper<IEEE_type, PRECISION>::DR
   = std::uniform_real_distribution<IEEE_type> (-.5, .5);
-  
+    
+}
+
+namespace std{
+
+  template<typename IEEE_type, int PRECISION>
+  mcaila::wrapper<IEEE_type, PRECISION> sqrt
+  (mcaila::wrapper<IEEE_type, PRECISION> x)
+  {
+    mcaila::wrapper<IEEE_type, PRECISION> y
+      (sqrt(static_cast<IEEE_type>(x)));
+    return y;
+  }
+
+  template<typename IEEE_type, int PRECISION>
+  mcaila::wrapper<IEEE_type, PRECISION> fabs
+  (mcaila::wrapper<IEEE_type, PRECISION> x)
+  {
+    if (static_cast<IEEE_type>(x) < 0) return -x;
+    else return x;
+  }
   
 }
+
+
 
 #endif

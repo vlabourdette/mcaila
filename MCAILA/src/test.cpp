@@ -32,16 +32,14 @@
 
 
 
-
+#include <functional>
 #include "mca.hpp"
 #include "lab.hpp"
+#include "stats.hpp"
 #include <iostream>
 
-#if defined(_OPENMP)
-#include <omp.h>
-#endif
-
-
+template<typename T>
+using matrix_t = std::vector<std::vector<T>>;
 
 int main ()
 {
@@ -49,21 +47,22 @@ int main ()
   const int PRECISION_D = 52;
   
   
-  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,2);
-  A[0][0] = mcaila::wrapper<double, PRECISION_D>
+  auto A = mcaila::make_matrix<mcaila::wrapper<float, PRECISION_F>>(2,2);
+  A[0][0] = mcaila::wrapper<float, PRECISION_F>
     (.2161, 4);
-  A[0][1] = mcaila::wrapper<double, PRECISION_D>
+  A[0][1] = mcaila::wrapper<float, PRECISION_F>
     (.1441, 4);
-  A[1][0] = mcaila::wrapper<double, PRECISION_D>
+  A[1][0] = mcaila::wrapper<float, PRECISION_F>
     (1.2969, 5);
-  A[1][1] = mcaila::wrapper<double, PRECISION_D>
+  A[1][1] = mcaila::wrapper<float, PRECISION_F>
     (.8648, 4);
 
-  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,1);
-  b[0][0] = mcaila::wrapper<double, PRECISION_D>
+  auto b = mcaila::make_matrix<mcaila::wrapper<float, PRECISION_F>>(2,1);
+  b[0][0] = mcaila::wrapper<float, PRECISION_F>
     (.1440, 4);
-  b[1][0] = mcaila::wrapper<double, PRECISION_D>
+  b[1][0] = mcaila::wrapper<float, PRECISION_F>
     (.8642, 4);
+  
   
   /*
   auto A = mcaila::make_matrix<double>(24,24);
@@ -82,7 +81,6 @@ int main ()
       b[i][0] = 1;
     }
   */
-  double epsilon = pow(10,-10);
   /*
   std::cout << "Etat initial de A : " << std::endl;
   std::cout << static_cast<double>(A[0][0]) << " "
@@ -98,15 +96,47 @@ int main ()
   
   mcaila::LU_solve<mcaila::wrapper<double, PRECISION>> (A, x, pivot);
   */
-  
-  auto x = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION_F>,
-			    mcaila::wrapper<double, PRECISION_D>>
-    (A, b, epsilon);
+  /*  
+  auto A = mcaila::make_matrix<double>(2, 2);
+  A[0][0] = .2161;
+  A[0][1] = .1441;
+  A[1][0] = 1.2969;
+  A[1][1] = .8648;
 
+  auto b = mcaila::make_matrix<double>(2, 1);
+  b[0][0] = .1440;
+  b[1][0] = .8642;
+  
+  auto x = mcaila::LU_mixte<float, double>(A,b);
+  
+
+  
+  mcaila::print<double>(x);
+  */
+  
+  auto f = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION_F>,
+			    mcaila::wrapper<double, PRECISION_D>>;
+  auto s = mcaila::LU<mcaila::wrapper<float, PRECISION_F>>;
+  auto d = mcaila::LU<mcaila::wrapper<double, PRECISION_D>>;
+  
+  auto x = mcaila::stat_analysis<mcaila::wrapper<float, PRECISION_F>>
+		(s, A, b, 100);
+  
+  mcaila::print<mcaila::wrapper<float, PRECISION_F>>(x.first);
+  mcaila::print<mcaila::wrapper<float, PRECISION_F>>(x.second);
+  
+  /*
+  std::cout << "Average : " << std::endl;
   for (int i = 0 ; i < 2 ; i++)
     {
-      std::cout << static_cast<double>(x[i][0]) << std::endl;
+      std::cout << static_cast<double>((x.first)[i][0]) << std::endl;
     }
-  
+  std::cout << "\n";
+  std::cout << "Standard error : " << std::endl;
+  for (int i = 0 ; i < 2 ; i++)
+    {
+      std::cout << static_cast<double>((x.second)[i][0]) << std::endl;
+    }
+  */
   return 0;
 }

@@ -34,17 +34,63 @@
 #ifndef __STATS_H__
 #define __STATS_H__
 
-#include <utils>
+#include <utility>
 #include <functional>
+
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
+#include "lab.hpp"
 
 template<typename T>
 using matrix_t = std::vector<std::vector<T>>;
 
 namespace mcaila{
 
-  template<typename T> std::pair<T, T> stat_analysis
-  (std::function(/*voir doc STL*/), matrix_t<T>, matrix_t<T>, int);
+  template<typename T> std::pair<matrix_t<T>, matrix_t<T>> stat_analysis
+  (std::function<matrix_t<T>(matrix_t<T>&, matrix_t<T>&)> method,
+   matrix_t<T> A, matrix_t<T> b, int iter)
+  {
+    size_t n = b.size();
+    matrix_t<T> average = make_matrix<T>(n, b[0].size());
+    matrix_t<T> results = make_matrix<T>(n, iter);
+    matrix_t<T> deviation = make_matrix<T>(n, b[0].size());
+    matrix_t<T> temp = make_matrix<T>(n, b[0].size()); 
+
+    
+#if defined(_TARACE)
+#pragma omp parallel for
+#endif
+    for (size_t i = 0 ; i < iter ; i++)
+      {
+	temp = method (A, b);
+	for (size_t j = 0 ; j < n ; j++)
+	  {
+	    if (isnan(temp[j][0])) temp[j][0] = 0.;
+	    average[j][0] += temp[j][0];
+	    results[j][i] = temp[j][0];
+	  }
+      }
+    for (size_t i = 0 ; i < n ; i++)
+      {
+	average[i][0] /= iter;
+	for (size_t j = 0 ; j < iter ; j++)
+	  {
+	    deviation[i][0] += (results[i][j] - average[i][0])
+	      * (results[i][j] - average[i][0]);
+	  }
+	deviation[i][0] /= (static_cast<T>(iter - 1));
+	/* 
+	   WARNING
+	   SQRT NOT IMPLEMENTED YET
+	*/
+	deviation[i][0] = sqrt(deviation[i][0])/sqrt(average[i][0]);
+      }
+    return std::make_pair (average, deviation);
+  }
   
+    
 }
 
 #endif

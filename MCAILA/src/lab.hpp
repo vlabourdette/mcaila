@@ -47,19 +47,82 @@ namespace mcaila{
   ( const size_t M, const size_t N)
   { return std::vector<std::vector<T>> (M, std::vector<T>(N)); }
 
+  template<typename T> void print (matrix_t<T> M)
+  {
+    for (size_t i = 0 ; i < M.size() ; i++)
+      {
+	for (size_t j = 0 ; j < M[0].size() ; j++)
+	  {
+	    std::cout << M[i][j] << " ";
+	  }
+	std::cout << "\n";
+      }
+  }
+  
   template<typename T/*, typename matrix_t*/>
-  T norm (const matrix_t<T>& A)
+  T norm (const matrix_t<T>& A, int num)
   {
     T result = 0;
     T sum;
-    for (size_t i = 0 ; i < A.size() ; i++)
+    switch (num)
       {
-	sum = 0;
+      case 0:
+	for (size_t i = 0 ; i < A.size() ; i++)
+	  {
+	    sum = 0;
+	    for (size_t j = 0 ; j < (A[0]).size() ; j++)
+	      {
+		sum += fabs(A[i][j]);
+	      }
+	    if (result < sum) result = sum;
+	  }
+	break;
+      case 1:
 	for (size_t j = 0 ; j < (A[0]).size() ; j++)
 	  {
-	    sum += A[i][j];
+	    sum = 0;
+	    for (size_t i = 0 ; i < A.size() ; i++)
+	      {
+		sum += fabs(A[i][j]);
+	      }
+	    if (result < sum) result = sum;
 	  }
-	if (result < sum) result = sum;
+	break;
+      default:
+	break;
+      }
+    return result;
+  }
+
+  template<typename T>
+  T norm_vect (const matrix_t<T>& v, int num)
+  {
+    T result = 0;
+    switch (num)
+      {
+      case 0 : 
+	for (size_t i = 0 ; i < v.size() ; i++)
+	  {
+	    T temp = fabs(v[i][0]);
+	    if (result < temp) result = temp;
+	  }
+	break;
+      case 1:
+	for (size_t i = 0 ; i < v.size() ; i++)
+	  {
+	    result += fabs(v[i][0]);
+	  }
+	break;
+      case 2:
+	for (size_t i = 0 ; i < v.size() ; i++)
+	  {
+	    T temp = fabs(v[i][0]);
+	    result += temp * temp;
+	  }
+	result = sqrt (result);
+	break;
+      default:
+	break;
       }
     return result;
   }
@@ -137,17 +200,31 @@ namespace mcaila{
   template</*typename matrix_t, */typename T>
   void LU_solve (matrix_t<T>& A, matrix_t<T>& b, std::vector<size_t> P)
   {
-    for (size_t i = 0 ; i < A.size() ; i++)
+    size_t n = A.size();
+
+    /* b := Pb */
+    for (size_t i = 0 ; i < n ; i++)
       {
 	swap_rows<T>(b, i, P[i]);
       }
-    for (int i = A.size() - 1 ; i >= 0 ; i--)
+    
+    /* Ly = Pb */ 
+    for (size_t i = 0 ; i < n ; i++)
       {
-	for (int j = i+1 ; j < A.size() ; j++)
+	for (size_t j = 0 ; j < i ; j++)
 	  {
-	    b[i][0] -= ( A[i][j] * b[j][0] );
+	    b[i][0] -= A[i][j] * b[j][0];
 	  }
-	b[i][0] /= A[i][i];
+      }
+
+    /* Ux = y */
+    for (size_t i = 0 ; i < n ; i++)
+      {
+	for (size_t j = 0 ; j < i ; j++)
+	  {
+	    b[n-i-1][0] -= A[n-i-1][n-j-1] * b[n-j-1][0];
+	  }
+	b[n-i-1][0] /= A[n-i-1][n-i-1];
       }
     
   }
@@ -170,9 +247,10 @@ namespace mcaila{
   }
   
   template</*typename matrix_t, */typename F, typename D>
-  matrix_t<D> LU_mixte (matrix_t<D>& A, matrix_t<D>& b, D epsilon)
+  matrix_t<D> LU_mixte (matrix_t<D>& A, matrix_t<D>& b)
   {
     int iter = 0, ITER_MAX = 30;
+    D epsilon = std::numeric_limits<double>::epsilon();
     size_t n = A.size();
     matrix_t<F> lu = make_matrix<F>(A.size(), A[0].size());
     matrix_t<F> y = make_matrix<F>(b.size(), b[0].size());
@@ -192,15 +270,16 @@ namespace mcaila{
     for (size_t i = 0 ; i < n ; i++)
       { x[i][0] = static_cast<D>(y[i][0]); }
     r = matrix_product<D> (A, x);
-    while ((norm(r) > epsilon) || (iter > ITER_MAX))
+    while ((norm_vect(r,0) >
+	    (static_cast<D>(sqrt(n))*norm_vect(x,0)*norm(A,0)*epsilon))
+	   && (iter++ < ITER_MAX))
       {
 	for (size_t i = 0 ; i < n ; i++)
 	  { z[i][0] = static_cast<F>(b[i][0] - r[i][0]); }
-
 	LU_solve<F>(lu, z, pivot);
 
 	for (size_t i = 0 ; i < n ; i++)
-	  { x[i][0] -= static_cast<D>(z[i][0]); }
+	  { x[i][0] += static_cast<D>(z[i][0]); }
 	r = matrix_product<D> (A, x);
       }
     return x;
