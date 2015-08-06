@@ -59,7 +59,7 @@ namespace mcaila{
     matrix_t<T> temp = make_matrix<T>(n, b[0].size()); 
 
     
-#if defined(_TARACE)
+#if defined(_OPENMP)
 #pragma omp parallel for
 #endif
     for (size_t i = 0 ; i < iter ; i++)
@@ -68,24 +68,23 @@ namespace mcaila{
 	for (size_t j = 0 ; j < n ; j++)
 	  {
 	    if (isnan(temp[j][0])) temp[j][0] = 0.;
-	    average[j][0] += temp[j][0];
 	    results[j][i] = temp[j][0];
 	  }
       }
     for (size_t i = 0 ; i < n ; i++)
       {
-	average[i][0] /= iter;
-	for (size_t j = 0 ; j < iter ; j++)
-	  {
+	    for (size_t j = 0 ; j < iter ; j++)
+	      {
+	    average[i][0] += results[i][j];
+	  }
+	    average[i][0] /= iter;
+	    for (size_t j = 0 ; j < iter ; j++)
+	      {
 	    deviation[i][0] += (results[i][j] - average[i][0])
 	      * (results[i][j] - average[i][0]);
 	  }
-	deviation[i][0] /= (static_cast<T>(iter - 1));
-	/* 
-	   WARNING
-	   SQRT NOT IMPLEMENTED YET
-	*/
-	deviation[i][0] = sqrt(deviation[i][0])/sqrt(average[i][0]);
+	    deviation[i][0] /= (static_cast<T>(iter - 1));
+	    deviation[i][0] = sqrt(deviation[i][0])/sqrt(iter);
       }
     return std::make_pair (average, deviation);
   }

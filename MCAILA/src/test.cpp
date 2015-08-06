@@ -46,26 +46,26 @@ int main ()
   const int PRECISION_F = 23;
   const int PRECISION_D = 52;
   
-  
-  auto A = mcaila::make_matrix<mcaila::wrapper<float, PRECISION_F>>(2,2);
-  A[0][0] = mcaila::wrapper<float, PRECISION_F>
+  /*
+  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,2);
+  A[0][0] = mcaila::wrapper<double, PRECISION_D>
     (.2161, 4);
-  A[0][1] = mcaila::wrapper<float, PRECISION_F>
+  A[0][1] = mcaila::wrapper<double, PRECISION_D>
     (.1441, 4);
-  A[1][0] = mcaila::wrapper<float, PRECISION_F>
+  A[1][0] = mcaila::wrapper<double, PRECISION_D>
     (1.2969, 5);
-  A[1][1] = mcaila::wrapper<float, PRECISION_F>
+  A[1][1] = mcaila::wrapper<double, PRECISION_D>
     (.8648, 4);
 
-  auto b = mcaila::make_matrix<mcaila::wrapper<float, PRECISION_F>>(2,1);
-  b[0][0] = mcaila::wrapper<float, PRECISION_F>
+  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,1);
+  b[0][0] = mcaila::wrapper<double, PRECISION_D>
     (.1440, 4);
-  b[1][0] = mcaila::wrapper<float, PRECISION_F>
+  b[1][0] = mcaila::wrapper<double, PRECISION_D>
     (.8642, 4);
+  */
   
   
-  /*
-  auto A = mcaila::make_matrix<double>(24,24);
+  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(24,24);
   for (int i = 0 ; i < 24 ; i++)
     {
       for (int j = 0 ; j < 24 ; j++)
@@ -75,12 +75,12 @@ int main ()
 	  else A[i][j] = 0;
 	}
     }
-  auto b = mcaila::make_matrix<double>(24,1);
+  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(24,1);
   for (int i = 0 ; i < 24 ; i++)
     {
       b[i][0] = 1;
     }
-  */
+  
   /*
   std::cout << "Etat initial de A : " << std::endl;
   std::cout << static_cast<double>(A[0][0]) << " "
@@ -119,11 +119,13 @@ int main ()
   auto s = mcaila::LU<mcaila::wrapper<float, PRECISION_F>>;
   auto d = mcaila::LU<mcaila::wrapper<double, PRECISION_D>>;
   
-  auto x = mcaila::stat_analysis<mcaila::wrapper<float, PRECISION_F>>
-		(s, A, b, 100);
-  
-  mcaila::print<mcaila::wrapper<float, PRECISION_F>>(x.first);
-  mcaila::print<mcaila::wrapper<float, PRECISION_F>>(x.second);
+  auto x = mcaila::stat_analysis<mcaila::wrapper<double, PRECISION_D>>
+		(f, A, b, 100);
+
+  std::cout << "Average : " << std::endl;
+  mcaila::print<mcaila::wrapper<double, PRECISION_D>>(x.first);
+  std::cout << "Standard error : " << std::endl;
+  mcaila::print<mcaila::wrapper<double, PRECISION_D>>(x.second);
   
   /*
   std::cout << "Average : " << std::endl;

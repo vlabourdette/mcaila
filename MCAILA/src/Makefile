@@ -3,7 +3,7 @@
  #*                                                            */
  #*  Monte Carlo Arithmetic Implementation for Linear Algebra  */
  #*                                                            */
- #*  Copyright (C) 2015  
+ #*  Copyright (C) 2015                                        */
  #*  Christophe Denis :                                        */
  #*  christophe dot denis at cmla dot ens dash cachan dot fr   */
  #*  and Valentin Labourdette :                                */
@@ -41,7 +41,7 @@ DEBUG=-Og -ggdb3
 all: test
 
 test: test.cpp
-	$(CC) $(DEBUG) -o test test.cpp && mv test ../bin/
+	$(CC) $(RELEASE) -o test test.cpp && mv test ../bin/
 
 
 clear:
