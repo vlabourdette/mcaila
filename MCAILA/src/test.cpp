@@ -38,14 +38,13 @@
 #include "stats.hpp"
 #include <iostream>
 
-template<typename T>
-using matrix_t = std::vector<std::vector<T>>;
-
 int main ()
 {
+ 
   const int PRECISION_F = 23;
-  const int PRECISION_D = 52;
-  
+  const int PRECISION_D = 51;
+
+  /* Première matrice de Kahan (dans le Parker) */
   /*
   auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,2);
   A[0][0] = mcaila::wrapper<double, PRECISION_D>
@@ -64,7 +63,7 @@ int main ()
     (.8642, 4);
   */
   
-  
+  /* Matrice de Wilkinson */
   auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(24,24);
   for (int i = 0 ; i < 24 ; i++)
     {
@@ -75,50 +74,37 @@ int main ()
 	  else A[i][j] = 0;
 	}
     }
+
+  /* Second membre égal à 1 */
   auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(24,1);
   for (int i = 0 ; i < 24 ; i++)
     {
       b[i][0] = 1;
     }
   
-  /*
-  std::cout << "Etat initial de A : " << std::endl;
-  std::cout << static_cast<double>(A[0][0]) << " "
-	    << static_cast<double>(A[0][1]) << std::endl;
-  std::cout << static_cast<double>(A[1][0]) << " "
-	    << static_cast<double>(A[1][1]) << std::endl;
-  std::cout << "\n";
-  */
 
-  /*
-  std::vector<size_t> pivot =
-    mcaila::LU_factor<mcaila::wrapper<double, PRECISION>>(A);
-  
-  mcaila::LU_solve<mcaila::wrapper<double, PRECISION>> (A, x, pivot);
-  */
-  /*  
-  auto A = mcaila::make_matrix<double>(2, 2);
-  A[0][0] = .2161;
-  A[0][1] = .1441;
-  A[1][0] = 1.2969;
-  A[1][1] = .8648;
 
-  auto b = mcaila::make_matrix<double>(2, 1);
-  b[0][0] = .1440;
-  b[1][0] = .8642;
-  
-  auto x = mcaila::LU_mixte<float, double>(A,b);
-  
-
-  
-  mcaila::print<double>(x);
-  */
-  
+  /* LU mixte */
   auto f = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION_F>,
 			    mcaila::wrapper<double, PRECISION_D>>;
+  /* LU simple */
   auto s = mcaila::LU<mcaila::wrapper<float, PRECISION_F>>;
+  /* LU double */
   auto d = mcaila::LU<mcaila::wrapper<double, PRECISION_D>>;
-  
+
+  /* 
+     Fonction d'analyse statistique avec MCA
+
+     Prend en paramètre une méthode de résolution (ici LU mixte),
+     un système linéaire et un nombre d'itérations MCA
+     
+     Pour lancer LU double, remplacer f par d
+     Pour lancer LU simple, remplacer f par s, double par float et
+     PRECISION_D par PRECISION_F
+
+     Renvoie un std::pair qui contient les moyennes (x.first)
+     et les déviations (x.second) pour chaque composante
+  */
   auto x = mcaila::stat_analysis<mcaila::wrapper<double, PRECISION_D>>
 		(f, A, b, 100);
 
@@ -126,19 +112,6 @@ int main ()
   mcaila::print<mcaila::wrapper<double, PRECISION_D>>(x.first);
   std::cout << "Standard error : " << std::endl;
   mcaila::print<mcaila::wrapper<double, PRECISION_D>>(x.second);
-  
-  /*
-  std::cout << "Average : " << std::endl;
-  for (int i = 0 ; i < 2 ; i++)
-    {
-      std::cout << static_cast<double>((x.first)[i][0]) << std::endl;
-    }
-  std::cout << "\n";
-  std::cout << "Standard error : " << std::endl;
-  for (int i = 0 ; i < 2 ; i++)
-    {
-      std::cout << static_cast<double>((x.second)[i][0]) << std::endl;
-    }
-  */
+
   return 0;
 }
