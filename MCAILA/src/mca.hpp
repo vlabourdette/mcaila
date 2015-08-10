@@ -40,6 +40,7 @@
 #include <random>
 #include <memory>
 #include <functional>
+#include <iomanip>
 #include "random_engine.hpp"
 #include "iostream"
 
@@ -214,7 +215,7 @@ namespace mcaila{
     friend std::ostream& operator<< (std::ostream& os,
 				     const wrapper<IEEE_type, PRECISION>& x)
     {
-      os << x.value;
+      os << std::setprecision(PRECISION) << x.value;
       return os;
     }
   
