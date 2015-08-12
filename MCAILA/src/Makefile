@@ -4,8 +4,12 @@
  #*  Monte Carlo Arithmetic Implementation for Linear Algebra  */
  #*                                                            */
  #*  Copyright (C) 2015                                        */
+ #*  Marc Baboulin :                                           */
+ #*  marc dot baboulin at gmail dot com                        */
  #*  Christophe Denis :                                        */
  #*  christophe dot denis at cmla dot ens dash cachan dot fr   */
+ #*  Amal Khabou :                                             */
+ #*  amal dot khabou at lri dot fr                             */
  #*  and Valentin Labourdette :                                */
  #*  valentin dot labourdette at gmail dot com                 */
  #*                                                            */

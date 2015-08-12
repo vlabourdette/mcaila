@@ -4,8 +4,12 @@
  /*  Monte Carlo Arithmetic Implementation for Linear Algebra  */
  /*                                                            */
  /*  Copyright (C) 2015                                        */
+ /*  Marc Baboulin :                                           */
+ /*  marc dot baboulin at gmail dot com                        */
  /*  Christophe Denis :                                        */
  /*  christophe dot denis at cmla dot ens dash cachan dot fr   */
+ /*  Amal Khabou :                                             */
+ /*  amal dot khabou at lri dot fr                             */
  /*  and Valentin Labourdette :                                */
  /*  valentin dot labourdette at gmail dot com                 */
  /*                                                            */
@@ -36,7 +40,9 @@
 #include "mca.hpp"
 #include "lab.hpp"
 #include "stats.hpp"
+#include "libmat.hpp"
 #include <iostream>
+
 
 int main ()
 {
@@ -45,44 +51,38 @@ int main ()
   const int PRECISION_D = 51;
 
   /* Première matrice de Kahan (dans le Parker) */
-  /*
-  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,2);
-  A[0][0] = mcaila::wrapper<double, PRECISION_D>
-    (.2161, 4);
-  A[0][1] = mcaila::wrapper<double, PRECISION_D>
-    (.1441, 4);
-  A[1][0] = mcaila::wrapper<double, PRECISION_D>
-    (1.2969, 5);
-  A[1][1] = mcaila::wrapper<double, PRECISION_D>
-    (.8648, 4);
+  /*  
+  auto A = mcaila::Parker1<mcaila::wrapper<double, PRECISION_D>>();
 
-  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(2,1);
-  b[0][0] = mcaila::wrapper<double, PRECISION_D>
-    (.1440, 4);
-  b[1][0] = mcaila::wrapper<double, PRECISION_D>
-    (.8642, 4);
+  auto b = mcaila::Parker1rhs<mcaila::wrapper<double, PRECISION_D>>();
   */
   
+  
   /* Matrice de Wilkinson */
-  auto A = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(24,24);
-  for (int i = 0 ; i < 24 ; i++)
-    {
-      for (int j = 0 ; j < 24 ; j++)
-	{
-	  if (i == j) A[i][j] = 1;
-	  else if (i > j) A[i][j] = -1;
-	  else A[i][j] = 0;
-	}
-    }
-
+  /*
+  auto A = mcaila::Wilkinson<mcaila::wrapper<double, PRECISION_D>>(24);
+  */
+  
   /* Second membre égal à 1 */
-  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(24,1);
+  /*
+  auto b = mcaila::make_matrix<mcaila::wrapper<float, PRECISION_F>>(24,1);
   for (int i = 0 ; i < 24 ; i++)
     {
       b[i][0] = 1;
     }
-  
+  */
 
+
+  /* Matrice aléatoire */
+  auto A = mcaila::aleatoire<mcaila::wrapper<double, PRECISION_D>>
+    (100, pow(10,10));
+
+  /* Second membre égal à 1 */
+  auto b = mcaila::make_matrix<mcaila::wrapper<double, PRECISION_D>>(100,1);
+  for (int i = 0 ; i < 100 ; i++)
+    {
+      b[i][0] = 1;
+    } 
 
   /* LU mixte */
   auto f = mcaila::LU_mixte<mcaila::wrapper<float, PRECISION_F>,
@@ -106,7 +106,7 @@ int main ()
      et les déviations (x.second) pour chaque composante
   */
   auto x = mcaila::stat_analysis<mcaila::wrapper<double, PRECISION_D>>
-		(f, A, b, 100);
+		(d, A, b, 100);
 
   std::cout << "Average : " << std::endl;
   mcaila::print<mcaila::wrapper<double, PRECISION_D>>(x.first);
